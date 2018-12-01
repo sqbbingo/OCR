@@ -27,5 +27,15 @@ for i = 1 : mm
         break;
     end
 end
-fcrop = fcropwithsqure(imglab, maxx);%根据面积切割
-figure,imshow(fcrop);
+fcrop = fcropwithsqure(imglab,eqmed,maxx);%根据面积切割--------------------12
+% figure,imshow(fcrop);
+%% 精确定位，方法待改进，对比度不强的时候不能正确分割
+fcropbw = im2bw(fcrop,graythresh(fcrop));%使用阈值变换法把灰度图像转换成二值图像----13
+% figure,imshow(fcropbw);
+infbw = ~fcropbw;%黑白转换
+% figure,imshow(infbw);
+se = strel('line',20,90);%构造结构元素用于膨胀腐蚀及开闭运算等操作的结构元素对象--14
+ferode = imerode(fcropbw , se);%图像腐蚀-----------------------------------15
+figure,imshow(ferode);
+[m, n, imla] = sortwithlabel(~ferode,8);%---------------------------------16
+[mm,nn] = size(m);
