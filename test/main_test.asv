@@ -1,4 +1,10 @@
-%%下面这段代码把24位真彩色位图转为灰度图像 
+% test.m是主程序
+clear all,close all,clc;
+% tic
+load temp
+% loadpath = ('D:\学习资料\研究生学习资料\课设实验\骆英浩\机器视觉\作业1\机器视觉1\');
+savepath = ('D:\学习资料\研究生学习资料\课设实验\骆英浩\机器视觉\作业1\机器视觉2\');
+%% 下面这段代码把24位真彩色位图转为灰度图像 
 filename = '6.bmp';
 imfinfo(filename) % 查看图像文件信息
 imgRgb = imread(filename); % 读入一幅彩色图像------------------------------1
@@ -91,4 +97,87 @@ end
 % %       figure,imshow(secondlineimg{i});
 % %       imwrite(secondlineimg{i},[savepath '2-' num2str(i) '.bmp'], 'bmp');
 % end
+% toc
+%% 字符识别
+% tic
+firstline = '00000000';
+for i = 1 : 8
+    if guanzi.ritohw(index(n(i))) > 4
+        firstline(i) = '1';
+        continue
+    end
+    charbw = im2bw(firstlineimg{i},graythresh(firstlineimg{i}));
+    charbwunion = imresize(charbw,[25 10]);
+    se = strel('line',2,90);
+    charrode = imerode(charbwunion , se);
+%     figure,imshow(charrode);
+    iso = isoremove(charrode);
+%     figure,imshow(iso);
+    for j = 1 : 12
+        error = 0;
+        for ii = 1 : 25
+            for jj = 1 : 10
+                error = error + abs(255*double(iso(ii,jj))-double(temp{j}(ii,jj)));
+            end
+        end
+        err(j) = error;
+    end
+    teemp = 255*25*10;
+    num = 0;
+    for j = 1 : 12
+        if err(j) < teemp;
+            teemp = err(j);
+            num = j;
+        end
+    end
+    if num < 11
+        firstline(i) = num2str(num-1);
+    elseif num == 11
+        firstline(i) = 'F';
+    elseif num == 12
+        firstline(i) = 'H';
+    end
+end
+secondline = '000000';
+for i = 1 : 6
+    if guanzi.ritohw(index2(nn(i))) > 4
+        secondline(i) = '1';
+        continue
+    end
+    charbw = im2bw(secondlineimg{i},graythresh(secondlineimg{i}));
+    charbwunion = imresize(charbw,[25 10]);
+    se = strel('line',2,90);
+    charrode = imerode(charbwunion , se);
+%     figure,imshow(charrode);
+    iso = isoremove(charrode);
+%     figure,imshow(iso);
+    for j = 1 : 12
+        error = 0;
+        for ii = 1 : 25
+            for jj = 1 : 10
+                error = error + abs(255*double(iso(ii,jj))-double(temp{j}(ii,jj)));
+            end
+        end
+        err(j) = error;
+    end
+    teemp = 255*25*10;
+    num = 0;
+    for j = 1 : 12
+        if err(j) < teemp;
+            teemp = err(j);
+            num = j;
+        end
+    end
+    if num < 11
+        secondline(i) = num2str(num-1);
+    elseif num == 11
+        secondline(i) = 'F';
+    elseif num == 12
+        secondline(i) = 'H';
+    end
+end
+pri = ['结果是：'];
+disp(pri);
+disp(firstline);
+disp(secondline);
 % toc
