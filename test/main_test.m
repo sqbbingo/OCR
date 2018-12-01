@@ -39,3 +39,56 @@ ferode = imerode(fcropbw , se);%Í¼Ïñ¸¯Ê´-----------------------------------15
 figure,imshow(ferode);
 [m, n, imla] = sortwithlabel(~ferode,8);%---------------------------------16
 [mm,nn] = size(m);
+%% ×Ö·ûµÄ¾«È·¼ôÇÐ
+for i = 3 : 16
+    [row{i-2},col{i-2}] = find((n(i)-1) == imla);%×¢Òâ1µÄ²îÖµ
+    guanzi.up(i-2) = min(row{i-2});
+    guanzi.down(i-2) = max(row{i-2});
+    guanzi.left(i-2) = min(col{i-2});
+    guanzi.right(i-2) = max(col{i-2});
+    guanzi.ritohw(i-2) = (guanzi.down(i-2) - guanzi.up(i-2))...
+                        / (guanzi.right(i-2)-guanzi.left(i-2));
+    guanzi.position(i-2,1) = mean(row{i-2}(:));
+    guanzi.position(i-2,2) = mean(col{i-2}(:));
+end
+halfposi = mean(guanzi.position(:,1));
+ii = 1;
+jj = 1;
+for i = 1 : 14
+    if guanzi.position(i,1) < halfposi
+        line1(ii) = guanzi.position(i,2);
+        index(ii) = i;
+        ii = ii + 1;
+    else
+        line2(jj) = guanzi.position(i,2);
+        index2(jj) = i;
+        jj = jj + 1;
+    end
+end
+[m,n] = sort(line1,'ascend');
+[mm,nn] = sort(line2,'ascend');
+for i = 1 : 8
+    p = index(n(i));
+    height = guanzi.down(p) - guanzi.up(p);
+    width = guanzi.right(p) - guanzi.left(p);
+    firstlineimg{i} = imcrop(fcrop,[guanzi.left(p) guanzi.up(p) width height]);
+end
+for i = 1 : 6
+    p = index2(nn(i));
+    height = guanzi.down(p) - guanzi.up(p);
+    width = guanzi.right(p) - guanzi.left(p);
+    secondlineimg{i} = imcrop(fcrop,[guanzi.left(p) guanzi.up(p) width height]);
+end
+% figure;
+% for i = 1 : 8
+%     subplot(2,4,i),imshow(firstlineimg{i});
+% %       figure,imshow(firstlineimg{i});
+% %       imwrite(firstlineimg{i},[savepath '1-' num2str(i) '.bmp'], 'bmp');
+% end
+% figure;
+% for i = 1 : 6
+%     subplot(2,3,i),imshow(secondlineimg{i});
+% %       figure,imshow(secondlineimg{i});
+% %       imwrite(secondlineimg{i},[savepath '2-' num2str(i) '.bmp'], 'bmp');
+% end
+% toc
