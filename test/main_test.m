@@ -17,9 +17,9 @@ eq = histeq(filteredRGB, 256);%指定直方图均衡后的灰度级数为256--------------5
 eqmed = medfilt2(eq,[3,3]);%消除图像噪声之中值滤波器------------------------6
 % figure,imshow(eqmed),title('medfilter');
 bw = im2bw(eqmed,graythresh(eqmed));%把灰度图像转换成二值图像---------------7
-figure,imshow(bw),title('bw');
+% figure,imshow(bw),title('bw');
 %% 粗定位
-[m,n,imglab] = sortwithlabel(bw,4);%----------------------------------------8
+[m,n,imglab] = sortwithlabel(bw,4);%----------------------------------------8-11
 [mm,nn] = size(n);
 for i = 1 : mm
     if n(i)~=1
@@ -27,5 +27,5 @@ for i = 1 : mm
         break;
     end
 end
-fcrop = fcropwithsqure(imglab,eqmed,maxx);
+fcrop = fcropwithsqure(imglab, maxx);%根据面积切割
 figure,imshow(fcrop);
